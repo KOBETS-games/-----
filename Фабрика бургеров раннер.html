@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Фабрика бургеров runner</title>
+</head>
+<body>
+  <canvas id="game" width="1310" height="608"></canvas>
+  <script>
+ var canvas = document.getElementById("game");
+    var ctx = canvas.getContext("2d");
+	function floor(x, height) {
+	  this.x = x;
+      this.width = 608;
+      this.height = height;
+	}
+    var world = {
+      height: 608,
+      width: 1310,
+      gravity: 11.3,
+      highestFloor: 4200,
+      speed: 10,
+      distanceTravelled: 0,
+      maxSpeed: 800,
+	  tilesPassed: 0,
+	  plitki: 1,
+	  maxplitki: 54,
+	  stop: 1,
+      level: 2,
+	  autoScroll: true,
+      floorTiles: [
+        new floor(0, 150)
+      ],
+      stop: function() {
+        this.autoScroll = false;
+      },
+	  moveFloor: function() {
+        for(index in this.floorTiles) {
+          var tile = this.floorTiles[index];
+          tile.x -= this.speed;
+          this.distanceTravelled += this.speed;
+        }
+      },
+      addFutureTiles: function() {
+        if(this.floorTiles.length >= 4) {
+          return;
+        }
+        var previousTile = this.floorTiles[this.floorTiles.length - 1];
+        var biggestJumpableHeight = previousTile.height + player.height * 3.5;
+		this.plitki += 1;
+		if(this.plitki > this.maxplitki) {
+		if(this.maxplitki == 54) {
+			this.maxplitki = 50;
+		}
+		stop = 0;
+		this.gravity = 9.5;
+	    this.level += 2;
+		this.plitki = 0;
+		this.speed = 10;
+		this.maxplitki += 25;
+		player.y=-100
+		}
+        if(biggestJumpableHeight > this.highestFloor) {
+          biggestJumpableHeight = this.highestFloor;
+        }
+        var randomHeight = Math.floor(Math.random() * biggestJumpableHeight) + player.height;
+        var leftValue = (previousTile.x + previousTile.width);
+        var next = new floor(leftValue,( randomHeight % 3 + 1) * 40 + 30);
+        this.floorTiles.push(next);
+      },
+      cleanOldTiles: function() {
+        for(index in this.floorTiles) {
+          if(this.floorTiles[index].x <= -this.floorTiles[index].width) {
+            this.floorTiles.splice(index, 1);
+            this.tilesPassed++;
+            if(this.tilesPassed % 3 == 0 && this.speed < this.maxSpeed) {
+              this.speed++;
+            }
+          }
+        }
+      },
+      getDistanceToFloor: function(playerX) {
+        for(index in this.floorTiles) {
+          var tile = this.floorTiles[index];
+          if(tile.x <= playerX && tile.x + tile.width >= playerX) {
+            return tile.height;
+          }
+        }
+        return -1;
+      },
+      tick: function() {
+        if(!this.autoScroll) {
+          return;
+        }
+        this.cleanOldTiles();
+        this.addFutureTiles();
+        this.moveFloor();
+      },
+      draw: function() {
+		if (this.level == 2) {		
+			ctx.fillStyle = "#2d448b";
+			ctx.fillRect (0, 0, this.width, this.height);
+			for(index in this.floorTiles) {
+			  var tile = this.floorTiles[index];
+			  var y = world.height - tile.height;
+			  ctx.fillStyle = "#E0FFFF";
+			  ctx.fillRect(tile.x, y, tile.width, tile.height);
+			}
+			ctx.fillStyle = "Navy";
+			ctx.font = "30px Arial";
+			ctx.fillText("Скорость: " + this.speed, 10, 35);
+			if((this.maxplitki - this.plitki) > 0) {
+			  ctx.fillText("Осталось: " + (54 - this.plitki), 10, 75);
+			}
+			if((54 - this.plitki) <= 0) {
+			  ctx.fillText("Осталось: 0", 10, 75);
+			}
+			ctx.fillText("Уровень 1", 10, 115);
+		}
+		if (this.level == 4) {
+			ctx.fillStyle = "gray";
+			ctx.fillRect (0, 0, this.width, this.height);
+			for(index in this.floorTiles) {
+			  var tile = this.floorTiles[index];
+			  var y = world.height - tile.height;
+			  ctx.fillStyle = "black";
+			  ctx.fillRect(tile.x, y, tile.width, tile.height);
+			}
+			ctx.fillStyle = "green";
+			ctx.font = "30px Arial";
+			ctx.fillText("Скорость: " + this.speed, 10, 35);
+			if((79 - this.plitki) > 0) {
+			  ctx.fillText("Осталось: " + (75 - this.plitki), 10, 75);
+			}
+			if((79 - this.plitki) <= 0) {
+			  x.fillText("Осталось: 0", 10, 75);
+			}
+			ctx.fillText("Уровень 2", 10, 115);
+		}
+		if (this.level == 6) {		
+			ctx.fillStyle = "#000000";
+			ctx.fillRect (0, 0, this.width, this.height);
+			for(index in this.floorTiles) {
+			  var tile = this.floorTiles[index];
+			  var y = world.height - tile.height;
+			  ctx.fillStyle = "#E0FFFF";
+			  ctx.fillRect(tile.x, y, tile.width, tile.height);
+			}
+			ctx.fillStyle = "gray";
+			ctx.font = "30px Arial";
+			ctx.fillText("Скорость: " + this.speed, 10, 35);
+			if((104 - this.plitki) > 0) {
+			  ctx.fillText("Осталось: " + (100 - this.plitki), 10, 75);
+			}
+			if((104 - this.plitki) <= 0) {
+			  ctx.fillText("Осталось: 0", 10, 75);
+			}
+			ctx.fillText("Уровень 3", 10, 115);
+			if((this.plitki) >= 100) {
+			  this.gravity=1000000000
+			  ctx.fillStyle = "green";
+			  ctx.font = "35px Arial";
+			  ctx.fillText("Поздравляю!!!                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              Мфаштф Ыщашф", 475, 60);
+			  ctx.fillText('Вы прошли игру "Фабрика Бургеров раннер"!!!', 400, 100);
+			  ctx.font = "8px Arial";
+			  ctx.fillStyle = "#131313";
+			  ctx.fillText("Hello world", 5, 150);
+			}
+		}
+      }
+    };
+    var player = {
+	  x: 230,
+      y: -100,
+	  height: 16,
+      width: 88,
+      downwardForce: world.gravity,
+      jumpHeight: 0,
+	  jumps: 0,
+	  jumpHeightNow: 6,
+	  delitel: 2,
+      getDistanceFor: function(x) {
+        var platformBelow = world.getDistanceToFloor(x);
+        return world.height - this.y - platformBelow;
+      },
+	  
+      applyGravity: function() {
+        this.currentDistanceAboveGround = this.getDistanceFor(this.x);
+        var rightHandSideDistance = this.getDistanceFor(this.x + this.width);
+        if(this.currentDistanceAboveGround < 0 || rightHandSideDistance < 0) {
+          world.stop();
+        }
+	  },
+      processGravity: function() {
+        this.y += this.downwardForce;
+        var floorHeight = world.getDistanceToFloor(this.x, this.width);
+        var topYofPlatform = world.height - floorHeight;
+        if(this.y > topYofPlatform) {
+          this.y = topYofPlatform;
+        }
+        if(this.downwardForce < 0) {
+          this.jumpHeight += (this.downwardForce * -1);
+          if(this.jumpHeight >= 30 * this.jumpHeightNow) {
+            this.downwardForce = world.gravity;
+            this.jumpHeight = 0;
+          }
+        }
+      },
+	  jump: function() {
+        var floorHeight = world.getDistanceToFloor(this.x, this.width);
+        var onTheFloor = floorHeight == (world.height - this.y);
+		  if(onTheFloor) {
+			this.jumps = 0;
+			this.jumpHeightNow = 6;			
+		  }
+		  if(this.jumps < 4) {
+			this.downwardForce = -11;
+			this.jumps += 1;
+			if(this.jumps > 2) {
+			  this.jumpHeightNow = this.jumpHeightNow / this.delitel;
+			  this.delitel = this.delitel - 0,5;
+		    }
+			if(this.jumps <= 2) {
+			  this.delitel = 2;
+			}
+		  }
+		  if(this.jumps == 4) {
+		      this.delitel = this.delitel + 0,25;
+			  this.jumpHeightNow = this.jumpHeightNow / this.delitel;
+		}
+	   },
+	        keyPress: function(keyInfo) {
+        var floorHeight = world.getDistanceToFloor(this.x, this.width);
+        var onTheFloor = floorHeight == (world.height - this.y);
+		  if(onTheFloor) {
+			this.jumps = 0;
+			this.jumpHeightNow = 6;			
+		  }
+		  if(this.jumps < 4) {
+			this.downwardForce = -11;
+			this.jumps += 1;
+			if(this.jumps > 2) {
+			  this.jumpHeightNow = this.jumpHeightNow / this.delitel;
+			  this.delitel = this.delitel - 0,5;
+		    }
+			if(this.jumps <= 2) {
+			  this.delitel = 2;
+			}
+		  }
+		  if(this.jumps == 4) {
+		      this.delitel = this.delitel + 0,25;
+			  this.jumpHeightNow = this.jumpHeightNow / this.delitel;
+		}
+	   },
+      tick: function() {
+        this.processGravity();
+        this.applyGravity();
+      },
+      draw: function() {
+		if  (world.level == 2) {
+			ctx.beginPath();
+			ctx.moveTo(this.x, this.y-this.height-8);
+			ctx.lineTo(this.x+this.width, this.y-this.height-8);
+			ctx.lineTo(this.x+this.width, this.y-8);
+			ctx.lineTo(this.x, this.y-8);
+			ctx.strokeStyle = 'red';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'red';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x, this.y-8);
+			ctx.lineTo(this.x+50, this.y-8);
+			ctx.lineTo(this.x+50, this.y-32);
+			ctx.lineTo(this.x, this.y-32);
+			ctx.strokeStyle = 'red';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'red';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+88, this.y-48);
+			ctx.lineTo(this.x+57, this.y-48);
+			ctx.lineTo(this.x+57, this.y-16);
+			ctx.lineTo(this.x+88, this.y-16);
+			ctx.strokeStyle = 'red';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'red';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+88, this.y-40);
+			ctx.lineTo(this.x+65, this.y-40);
+			ctx.lineTo(this.x+65, this.y-24);
+			ctx.lineTo(this.x+88, this.y-24);
+			ctx.strokeStyle = '#87CEEB';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#87CEEB';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+20, this.y-16);
+			ctx.lineTo(this.x+12, this.y-16);
+			ctx.lineTo(this.x+12, this.y);
+			ctx.lineTo(this.x+20, this.y);
+			ctx.strokeStyle = 'black';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'black';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+22, this.y-14);
+			ctx.lineTo(this.x+10, this.y-14);
+			ctx.lineTo(this.x+10, this.y-2);
+			ctx.lineTo(this.x+22, this.y-2);
+			ctx.strokeStyle = 'black';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'black';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+24, this.y-12);
+			ctx.lineTo(this.x+8, this.y-12);
+			ctx.lineTo(this.x+8, this.y-4);
+			ctx.lineTo(this.x+24, this.y-4);
+			ctx.strokeStyle = 'black';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'black';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+14, this.y-10);
+			ctx.lineTo(this.x+18, this.y-10);
+			ctx.lineTo(this.x+18, this.y-6);
+			ctx.lineTo(this.x+14, this.y-6);
+			ctx.strokeStyle = 'yellow';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'yellow';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+44, this.y-16);
+			ctx.lineTo(this.x+36, this.y-16);
+			ctx.lineTo(this.x+36, this.y);
+			ctx.lineTo(this.x+44, this.y);
+			ctx.strokeStyle = 'black';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'black';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+46, this.y-14);
+			ctx.lineTo(this.x+34, this.y-14);
+			ctx.lineTo(this.x+34, this.y-2);
+			ctx.lineTo(this.x+46, this.y-2);
+			ctx.strokeStyle = 'black';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'black';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+48, this.y-12);
+			ctx.lineTo(this.x+32, this.y-12);
+			ctx.lineTo(this.x+32, this.y-4);
+			ctx.lineTo(this.x+48, this.y-4);
+			ctx.strokeStyle = 'black';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'black';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+38, this.y-10);
+			ctx.lineTo(this.x+42, this.y-10);
+			ctx.lineTo(this.x+42, this.y-6);
+			ctx.lineTo(this.x+38, this.y-6);
+			ctx.strokeStyle = 'yellow';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'yellow';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+76, this.y-16);
+			ctx.lineTo(this.x+68, this.y-16);
+			ctx.lineTo(this.x+68, this.y);
+			ctx.lineTo(this.x+76, this.y);
+			ctx.strokeStyle = 'black';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'black';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+78, this.y-14);
+			ctx.lineTo(this.x+66, this.y-14);
+			ctx.lineTo(this.x+66, this.y-2);
+			ctx.lineTo(this.x+78, this.y-2);
+			ctx.strokeStyle = 'black';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'black';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+80, this.y-12);
+			ctx.lineTo(this.x+64, this.y-12);
+			ctx.lineTo(this.x+64, this.y-4);
+			ctx.lineTo(this.x+80, this.y-4);
+			ctx.strokeStyle = 'black';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'black';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+70, this.y-10);
+			ctx.lineTo(this.x+74, this.y-10);
+			ctx.lineTo(this.x+74, this.y-6);
+			ctx.lineTo(this.x+70, this.y-6);
+			ctx.strokeStyle = 'yellow';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'yellow';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+16, this.y-28);
+			ctx.lineTo(this.x+20, this.y-28);
+			ctx.lineTo(this.x+20, this.y-24);
+			ctx.lineTo(this.x+16, this.y-24);
+			ctx.strokeStyle = 'green';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'green';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+12, this.y-32);
+			ctx.lineTo(this.x+20, this.y-32);
+			ctx.lineTo(this.x+20, this.y-28);
+			ctx.lineTo(this.x+12, this.y-28);
+			ctx.strokeStyle = 'green';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'green';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+2, this.y-38);
+			ctx.lineTo(this.x+20, this.y-38);
+			ctx.lineTo(this.x+20, this.y-32);
+			ctx.lineTo(this.x+2, this.y-32);
+			ctx.strokeStyle = 'green';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'green';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x, this.y-40);
+			ctx.lineTo(this.x+24, this.y-40);
+			ctx.lineTo(this.x+24, this.y-38);
+			ctx.lineTo(this.x, this.y-38);
+			ctx.strokeStyle = 'green';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'green';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+4, this.y-44);
+			ctx.lineTo(this.x+24, this.y-44);
+			ctx.lineTo(this.x+24, this.y-40);
+			ctx.lineTo(this.x+4, this.y-40);
+			ctx.strokeStyle = 'green';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'green';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+12, this.y-46);
+			ctx.lineTo(this.x+20, this.y-46);
+			ctx.lineTo(this.x+20, this.y-42);
+			ctx.lineTo(this.x+12, this.y-42);
+			ctx.strokeStyle = 'green';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'green';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+10, this.y-48);
+			ctx.lineTo(this.x+18, this.y-48);
+			ctx.lineTo(this.x+18, this.y-46);
+			ctx.lineTo(this.x+10, this.y-46);
+			ctx.strokeStyle = 'green';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'green';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x, this.y-38);
+			ctx.lineTo(this.x+2, this.y-38);
+			ctx.lineTo(this.x+2, this.y-32);
+			ctx.lineTo(this.x, this.y-32);
+			ctx.strokeStyle = '#2E8B57';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#2E8B57';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+4, this.y-44);
+			ctx.lineTo(this.x+6, this.y-44);
+			ctx.lineTo(this.x+6, this.y-38);
+			ctx.lineTo(this.x+4, this.y-38);
+			ctx.strokeStyle = '#2E8B57';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#2E8B57';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+6, this.y-40);
+			ctx.lineTo(this.x+8, this.y-40);
+			ctx.lineTo(this.x+8, this.y-36);
+			ctx.lineTo(this.x+6, this.y-36);
+			ctx.strokeStyle = '#2E8B57';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#2E8B57';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+8, this.y-40);
+			ctx.lineTo(this.x+10, this.y-40);
+			ctx.lineTo(this.x+10, this.y-34);
+			ctx.lineTo(this.x+8, this.y-34);
+			ctx.strokeStyle = '#2E8B57';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#2E8B57';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+14, this.y-46);
+			ctx.lineTo(this.x+16, this.y-46);
+			ctx.lineTo(this.x+16, this.y-34);
+			ctx.lineTo(this.x+14, this.y-34);
+			ctx.strokeStyle = '#2E8B57';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#2E8B57';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+16, this.y-48);
+			ctx.lineTo(this.x+18, this.y-48);
+			ctx.lineTo(this.x+18, this.y-38);
+			ctx.lineTo(this.x+16, this.y-38);
+			ctx.strokeStyle = '#2E8B57';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#2E8B57';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+18, this.y-46);
+			ctx.lineTo(this.x+20, this.y-46);
+			ctx.lineTo(this.x+20, this.y-42);
+			ctx.lineTo(this.x+18, this.y-42);
+			ctx.strokeStyle = '#2E8B57';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#2E8B57';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+20, this.y-38);
+			ctx.lineTo(this.x+24, this.y-38);
+			ctx.lineTo(this.x+24, this.y-28);
+			ctx.lineTo(this.x+20, this.y-28);
+			ctx.strokeStyle = '#2E8B57';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#2E8B57';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+22, this.y-40);
+			ctx.lineTo(this.x+24, this.y-40);
+			ctx.lineTo(this.x+24, this.y-38);
+			ctx.lineTo(this.x+22, this.y-38);
+			ctx.strokeStyle = '#2E8B57';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#2E8B57';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+24, this.y-48);
+			ctx.lineTo(this.x+38, this.y-48);
+			ctx.lineTo(this.x+38, this.y-32);
+			ctx.lineTo(this.x+24, this.y-32);
+			ctx.strokeStyle = 'yellow';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'yellow';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+38, this.y-46);
+			ctx.lineTo(this.x+40, this.y-46);
+			ctx.lineTo(this.x+40, this.y-32);
+			ctx.lineTo(this.x+38, this.y-32);
+			ctx.strokeStyle = 'yellow';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'yellow';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+24, this.y-48);
+			ctx.lineTo(this.x+36, this.y-48);
+			ctx.lineTo(this.x+36, this.y-40);
+			ctx.lineTo(this.x+24, this.y-40);
+			ctx.strokeStyle = '#ffbd54';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#ffbd54';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+26, this.y-48);
+			ctx.lineTo(this.x+28, this.y-48);
+			ctx.lineTo(this.x+28, this.y-46);
+			ctx.lineTo(this.x+26, this.y-46);
+			ctx.strokeStyle = 'yellow';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'yellow';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+28, this.y-44);
+			ctx.lineTo(this.x+30, this.y-44);
+			ctx.lineTo(this.x+30, this.y-42);
+			ctx.lineTo(this.x+28, this.y-42);
+			ctx.strokeStyle = 'yellow';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'yellow';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+32, this.y-48);
+			ctx.lineTo(this.x+34, this.y-48);
+			ctx.lineTo(this.x+34, this.y-46);
+			ctx.lineTo(this.x+32, this.y-46);
+			ctx.strokeStyle = 'yellow';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'yellow';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+32, this.y-44);
+			ctx.lineTo(this.x+36, this.y-44);
+			ctx.lineTo(this.x+36, this.y-40);
+			ctx.lineTo(this.x+32, this.y-40);
+			ctx.strokeStyle = 'yellow';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'yellow';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+40, this.y-38);
+			ctx.lineTo(this.x+48, this.y-38);
+			ctx.lineTo(this.x+48, this.y-32);
+			ctx.lineTo(this.x+40, this.y-32);
+			ctx.strokeStyle = '#FF8C00';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#FF8C00';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();=
+			ctx.moveTo(this.x+42, this.y-40);
+			ctx.lineTo(this.x+46, this.y-40);
+			ctx.lineTo(this.x+46, this.y-38);
+			ctx.lineTo(this.x+42, this.y-38);
+			ctx.strokeStyle = '#FF8C00';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#FF8C00';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(-100, 100);
+			ctx.lineTo(-100, 100);
+			ctx.strokeStyle = 'gray';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'gray';
+			ctx.fill();
+			ctx.stroke();
+		}
+		if  (world.level == 4) {
+			this.x=300
+			this.width=30
+			this.height=30
+			ctx.moveTo(this.x, this.y);
+			ctx.lineTo(this.x+30, this.y);
+			ctx.lineTo(this.x+30, this.y-30);
+			ctx.lineTo(this.x, this.y-30);
+			ctx.strokeStyle = 'red';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'red';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+14, this.y-30);
+			ctx.lineTo(this.x+16, this.y-30);
+			ctx.lineTo(this.x+16, this.y);
+			ctx.lineTo(this.x+14, this.y);
+			ctx.strokeStyle = '#87CEEB';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#87CEEB';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x, this.y-16);
+			ctx.lineTo(this.x+30, this.y-16);
+			ctx.lineTo(this.x+30, this.y-14);
+			ctx.lineTo(this.x, this.y-14);
+			ctx.strokeStyle = '#87CEEB';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#87CEEB';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(-100, 100);
+			ctx.lineTo(-100, 100);
+			ctx.strokeStyle = '#2d448b';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#2d448b';
+			ctx.fill();
+			ctx.stroke();
+		}
+		if  (world.level == 6) {
+			this.x=370
+			this.width=88
+			this.height=16
+			ctx.moveTo(this.x, this.y-this.height-8);
+			ctx.lineTo(this.x+this.width, this.y-this.height-8);
+			ctx.lineTo(this.x+this.width, this.y-8);
+			ctx.lineTo(this.x, this.y-8);
+			ctx.strokeStyle = 'red';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'red';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x, this.y-8);
+			ctx.lineTo(this.x+50, this.y-8);
+			ctx.lineTo(this.x+50, this.y-32);
+			ctx.lineTo(this.x, this.y-32);
+			ctx.strokeStyle = 'red';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'red';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+88, this.y-48);
+			ctx.lineTo(this.x+57, this.y-48);
+			ctx.lineTo(this.x+57, this.y-16);
+			ctx.lineTo(this.x+88, this.y-16);
+			ctx.strokeStyle = 'red';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'red';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+88, this.y-40);
+			ctx.lineTo(this.x+65, this.y-40);
+			ctx.lineTo(this.x+65, this.y-24);
+			ctx.lineTo(this.x+88, this.y-24);
+			ctx.strokeStyle = '#87CEEB';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#87CEEB';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+20, this.y-16);
+			ctx.lineTo(this.x+12, this.y-16);
+			ctx.lineTo(this.x+12, this.y);
+			ctx.lineTo(this.x+20, this.y);
+			ctx.strokeStyle = '#696969';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#696969';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+22, this.y-14);
+			ctx.lineTo(this.x+10, this.y-14);
+			ctx.lineTo(this.x+10, this.y-2);
+			ctx.lineTo(this.x+22, this.y-2);
+			ctx.strokeStyle = '#696969';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#696969';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+24, this.y-12);
+			ctx.lineTo(this.x+8, this.y-12);
+			ctx.lineTo(this.x+8, this.y-4);
+			ctx.lineTo(this.x+24, this.y-4);
+			ctx.strokeStyle = '#696969';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#696969';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+14, this.y-10);
+			ctx.lineTo(this.x+18, this.y-10);
+			ctx.lineTo(this.x+18, this.y-6);
+			ctx.lineTo(this.x+14, this.y-6);
+			ctx.strokeStyle = 'yellow';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'yellow';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+44, this.y-16);
+			ctx.lineTo(this.x+36, this.y-16);
+			ctx.lineTo(this.x+36, this.y);
+			ctx.lineTo(this.x+44, this.y);
+			ctx.strokeStyle = '#696969';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#696969';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+46, this.y-14);
+			ctx.lineTo(this.x+34, this.y-14);
+			ctx.lineTo(this.x+34, this.y-2);
+			ctx.lineTo(this.x+46, this.y-2);
+			ctx.strokeStyle = '#696969';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#696969';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+48, this.y-12);
+			ctx.lineTo(this.x+32, this.y-12);
+			ctx.lineTo(this.x+32, this.y-4);
+			ctx.lineTo(this.x+48, this.y-4);
+			ctx.strokeStyle = '#696969';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#696969';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+38, this.y-10);
+			ctx.lineTo(this.x+42, this.y-10);
+			ctx.lineTo(this.x+42, this.y-6);
+			ctx.lineTo(this.x+38, this.y-6);
+			ctx.strokeStyle = 'yellow';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'yellow';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+76, this.y-16);
+			ctx.lineTo(this.x+68, this.y-16);
+			ctx.lineTo(this.x+68, this.y);
+			ctx.lineTo(this.x+76, this.y);
+			ctx.strokeStyle = '#696969';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#696969';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+78, this.y-14);
+			ctx.lineTo(this.x+66, this.y-14);
+			ctx.lineTo(this.x+66, this.y-2);
+			ctx.lineTo(this.x+78, this.y-2);
+			ctx.strokeStyle = '#696969';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#696969';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+80, this.y-12);
+			ctx.lineTo(this.x+64, this.y-12);
+			ctx.lineTo(this.x+64, this.y-4);
+			ctx.lineTo(this.x+80, this.y-4);
+			ctx.strokeStyle = '#696969';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#696969';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+70, this.y-10);
+			ctx.lineTo(this.x+74, this.y-10);
+			ctx.lineTo(this.x+74, this.y-6);
+			ctx.lineTo(this.x+70, this.y-6);
+			ctx.strokeStyle = 'yellow';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'yellow';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+15, this.y-52);
+			ctx.lineTo(this.x+35, this.y-52);
+			ctx.lineTo(this.x+35, this.y-32);
+			ctx.lineTo(this.x+15, this.y-32);
+			ctx.strokeStyle = '#800000';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = '#800000';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+24, this.y-52);
+			ctx.lineTo(this.x+26, this.y-52);
+			ctx.lineTo(this.x+26, this.y-32);
+			ctx.lineTo(this.x+24, this.y-32);
+			ctx.strokeStyle = 'green';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'green';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+14, this.y-43);
+			ctx.lineTo(this.x+35, this.y-43);
+			ctx.lineTo(this.x+35, this.y-41);
+			ctx.lineTo(this.x+14, this.y-41);
+			ctx.strokeStyle = 'green';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'green';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x, this.y-37);
+			ctx.lineTo(this.x+10, this.y-37);
+			ctx.lineTo(this.x+10, this.y-32);
+			ctx.lineTo(this.x, this.y-32);
+			ctx.strokeStyle = 'red';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'red';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(this.x+40, this.y-37);
+			ctx.lineTo(this.x+50, this.y-37);
+			ctx.lineTo(this.x+50, this.y-32);
+			ctx.lineTo(this.x+40, this.y-32);
+			ctx.strokeStyle = 'red';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'red';
+			ctx.fill();
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(-100, 100);
+			ctx.lineTo(-100, 100);
+			ctx.strokeStyle = 'black';
+			ctx.lineWidth = 0.001;
+			ctx.closePath();
+			ctx.fillStyle = 'black';
+			ctx.fill();
+			ctx.stroke();
+		}
+	  }
+    };
+	window.addEventListener("keypress", function(keyInfo) { player.keyPress(keyInfo); }, false);
+    function tick() {
+	  player.tick();
+      world.tick();
+      world.draw();
+      player.draw();
+      window.setTimeout("tick()", 1000/60);
+    }
+    tick();
+  </script>
+</body>
+</html>
